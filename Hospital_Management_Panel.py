@@ -43,6 +43,7 @@ class Patient:
         self.date_of_birth = date_of_birth
         self.sickness = sickness
         self.bill = 0
+        self.is_here = None
 
 
     def show_info(self):
@@ -126,13 +127,14 @@ class HospitalControlPanel:
         except ValueError:
             print("Please write a numerical data to salary part and try again.")
 
-    def add_patient(self):
+    def sign_patient(self):
         name = input("Name: ")
         surname = input("Surname: ")
         id = input("Identıty number(with 11 number): ")
         date_of_birth = input("Date Of Birth(YYYY-MM-DD): ")
         sickness = input("Sickness: ")
         patient = Patient(name, surname, id, date_of_birth, sickness)
+        print(f"{patient.is_here}")
         self.cursor.execute("INSERT INTO PATIENT (NAME, SURNAME, IDENTITY_,DATEOFBIRTH, SICKNESS) VALUES(?,?,?,?,?)", (patient.name, patient.surname, patient.id, patient.date_of_birth, patient.sickness))
         self.conn.commit()
         print(f"{patient.name} {patient.surname} added the system.")
@@ -171,33 +173,60 @@ class HospitalControlPanel:
         name = input("Please write the name of a patient: ")
         self.cursor.execute("SELECT ID FROM PATIENT WHERE NAME = ?", (name, ))
         result = self.cursor.fetchone()
-        print(result[0])
-        return result[0] if result else None
+        if result:
+            print(f"Patient id:{result[0]}")
+        else:
+            print("Patient Not found !")
 
     def get_nurse_id(self):
         name = input("Please write the name of a nurse: ")
         self.cursor.execute("SELECT ID FROM NURSE WHERE NAME = ?", (name, ))
         result = self.cursor.fetchone()
-        print(result[0])
-        return result[0] if result else None
+        if result:
+            print(f"Nurse id:{result[0]}")
+        else:
+            print("Nurse not found !")
 
     def get_doctor_id(self):
         name = input("Please write the name of a doctor: ")
         self.cursor.execute("SELECT ID FROM DOCTOR WHERE NAME = ?", (name, ))
         result = self.cursor.fetchone()
-        print(result[0])
-        return result[0] if result else None
-
+        if result:
+            print(f"Doctor id:{result[0]}")
+        else:
+            print("Doctor not found !")
 
 
     def patient_exit(self):
         print("Patient Exit: ")
         id = input("Please write id: ")
         s = self.cursor.execute("SELECT * FROM PATIENT WHERE ID = ?", (id, )).fetchone()
-        print(s)
-        patient = Patient(s[1], s[2], s[3], s[4], s[5])
-        patient.is_here = True
-        patient.out()
+        if s :
+            if patient.is_here == True:
+                patient = Patient(s[1], s[2], s[3], s[4], s[5])
+                patient.is_here = False
+                print(f"{patient.name} {patient.surname} exited.")
+            else:
+                print("Patient is already exited.")
+        else:
+            print(f"There is no patient in the Hospital who has a ID:{id} ")
+
+
+    def patient_in(self):
+        print("Patient:")
+        id = input("Please write id: ")
+        s = self.cursor.execute("SELECT * FROM PATIENT WHERE ID = ?", (id,)).fetchone()
+        if s :
+            patient = Patient(s[1], s[2], s[3], s[4], s[5])
+            if patient.is_here == False :
+                print(f"{patient.name} {patient.surname} entered the hospital.")
+                patient.is_here = True
+            else:
+                print("Patient is already in the hospital.")
+        else:
+            print("You have to sign patient.")
+
+
 
     def show_all_patient(self):
         self.cursor.execute("SELECT * FROM PATIENT")
@@ -234,6 +263,7 @@ class HospitalControlPanel:
                 doctor_obj.show_info()
 
 
+
     def close_connection(self):
         self.conn.close()
 
@@ -243,23 +273,24 @@ while True:
     hospital.create_tables()
     print(20*"*", "Hospital Management Panel", 20*"*")
     print("""
-        1. Add Patient
+        1. Sign Patient
         2. Add Nurse
         3. Add Doctor
         4. Delete Nurse
         5. Delete Doctor
-        6. Delete Patient
-        7. Get Patient id
-        8. Get Nurse id
-        9. Get Doctor id
-        10. Show All Patients
-        11. Show All Nurses
-        12. Show All Doctors
-        13. Close Program
+        6. Exit Patient
+        7. Get İn Patient
+        8. Get Patient id
+        9. Get Nurse id
+        10. Get Doctor id
+        11. Show All Patients
+        12. Show All Nurses
+        13. Show All Doctors
+        14. Close Program
     """)
     proc = input("Process: ")
     if proc == "1":
-        hospital.add_patient()
+        hospital.sign_patient()
     elif proc == "2":
         hospital.add_nurse()
     elif proc == "3":
@@ -269,27 +300,26 @@ while True:
     elif proc == "5":
         hospital.delete_doc()
     elif proc == "6":
-        hospital.delete_patient()
+        hospital.patient_exit()
     elif proc == "7":
-        hospital.get_patient_id()
+        hospital.patient_in()
     elif proc == "8":
-        hospital.get_nurse_id()
+        hospital.get_patient_id()
     elif proc == "9":
-        hospital.get_doctor_id()
+        hospital.get_nurse_id()
     elif proc == "10":
-        hospital.show_all_patient()
+        hospital.get_doctor_id()
     elif proc == "11":
-        hospital.show_all_nurse()
+        hospital.show_all_patient()
     elif proc == "12":
-        hospital.show_all_doctor()
+        hospital.show_all_nurse()
     elif proc == "13":
-        print("Exiting system...")
+        hospital.show_all_doctor()
+    elif proc == "14":
+        print("Exiting the program...")
+        break
     else:
         print("You write something wrong.")
-        break
-
-
-
 
 
 
