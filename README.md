@@ -5,7 +5,9 @@
 *  :pushpin: Add you Employees and your Patients
 *  :pushpin: Delete Your Employees and Patients
 *  :pushpin: Show all Your Employees And Patients
+*  :pushpin: Get in and out your patients to your hospital easily  
 
-![image](https://github.com/Arda-Bayarer/Hospital_Management_Portal/assets/159937817/bfa3c6a1-bc45-4a98-948b-d482c0c14c46)
+![image](https://github.com/Arda-Bayarer/Hospital_Management_Portal/assets/159937817/7c10f13c-e40c-4d15-ac89-3ce0008d15ed)
+
 
 ## ENJOY :exclamation: :fire:
